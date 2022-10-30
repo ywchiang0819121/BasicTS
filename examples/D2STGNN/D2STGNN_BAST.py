@@ -1,6 +1,6 @@
 import os
 import sys
-from holidays import TR
+# from holidays import TR
 
 # TODO: remove it when basicts can be installed by pip
 sys.path.append(os.path.abspath(__file__ + "/../../.."))
