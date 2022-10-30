@@ -1,13 +1,12 @@
 import os
 import sys
-# from holidays import TR
 
 # TODO: remove it when basicts can be installed by pip
 sys.path.append(os.path.abspath(__file__ + "/../../.."))
 import torch
 from easydict import EasyDict
-from basicts.archs import D2STGNN
-from basicts.runners import D2STGNNRunner
+from basicts.archs import DGCRN
+from basicts.runners import DGCRNRunner
 from basicts.data import TimeSeriesForecastingDataset
 from basicts.losses import masked_mae
 from basicts.utils import load_adj
@@ -16,14 +15,14 @@ from basicts.utils import load_adj
 CFG = EasyDict()
 
 # ================= general ================= #
-CFG.DESCRIPTION = "D2STGNN model configuration"
-CFG.RUNNER = D2STGNNRunner
+CFG.DESCRIPTION = "DGCRN model configuration"
+CFG.RUNNER  = DGCRNRunner
 CFG.DATASET_CLS = TimeSeriesForecastingDataset
 CFG.DATASET_NAME = "BAST"
 CFG.DATASET_TYPE = "Traffic flow"
 CFG.DATASET_INPUT_LEN = 12
 CFG.DATASET_OUTPUT_LEN = 12
-CFG.GPU_NUM = 4
+CFG.GPU_NUM = 1
 
 # ================= environment ================= #
 CFG.ENV = EasyDict()
@@ -33,24 +32,25 @@ CFG.ENV.CUDNN.ENABLED = True
 
 # ================= model ================= #
 CFG.MODEL = EasyDict()
-CFG.MODEL.NAME = "D2STGNN"
-CFG.MODEL.ARCH = D2STGNN
+CFG.MODEL.NAME = "DGCRN"
+CFG.MODEL.ARCH = DGCRN
 adj_mx, _ = load_adj("datasets/" + CFG.DATASET_NAME +
                      "/adj_mx_bast.npz", "doubletransition", npz=True)
 CFG.MODEL.PARAM = {
-    "num_feat": 1,
-    "num_hidden": 32,
-    "dropout": 0.1,
+    "gcn_depth": 2,
+    "num_nodes": 325,
+    "predefined_A": [torch.Tensor(_) for _ in adj_mx],
+    "dropout": 0.3,
+    "subgraph_size": 20,
+    "node_dim": 40,
+    "middle_dim": 2,
     "seq_length": 12,
-    "k_t": 3,
-    "k_s": 2,
-    "gap": 3,
-    "num_nodes": 1680,
-    "adjs": [torch.tensor(adj) for adj in adj_mx],
-    "num_layers": 5,
-    "num_modalities": 2,
-    "node_hidden": 12,
-    "time_emb_dim": 12,
+    "in_dim": 2,
+    "list_weight": [0.05, 0.95, 0.95],
+    "tanhalpha": 3,
+    "cl_decay_steps": 5500,
+    "rnn_size": 64,
+    "hyperGNN_dim": 16
 }
 CFG.MODEL.FROWARD_FEATURES = [0, 1, 2]
 CFG.MODEL.TARGET_FEATURES = [0, 1]
@@ -61,14 +61,13 @@ CFG.TRAIN.LOSS = masked_mae
 CFG.TRAIN.OPTIM = EasyDict()
 CFG.TRAIN.OPTIM.TYPE = "Adam"
 CFG.TRAIN.OPTIM.PARAM = {
-    "lr": 0.002,
-    "weight_decay": 1.0e-5,
-    "eps": 1.0e-8
+    "lr":0.001,
+    "weight_decay":0.0001
 }
 CFG.TRAIN.LR_SCHEDULER = EasyDict()
 CFG.TRAIN.LR_SCHEDULER.TYPE = "MultiStepLR"
 CFG.TRAIN.LR_SCHEDULER.PARAM = {
-    "milestones": [1, 30, 38, 46, 54, 62, 70, 80],
+    "milestones":[100, 150],
     "gamma": 0.5
 }
 
@@ -76,7 +75,7 @@ CFG.TRAIN.LR_SCHEDULER.PARAM = {
 CFG.TRAIN.CLIP_GRAD_PARAM = {
     "max_norm": 5.0
 }
-CFG.TRAIN.NUM_EPOCHS = 100
+CFG.TRAIN.NUM_EPOCHS = 200
 CFG.TRAIN.CKPT_SAVE_DIR = os.path.join(
     "checkpoints",
     "_".join([CFG.MODEL.NAME, str(CFG.TRAIN.NUM_EPOCHS)])
@@ -90,13 +89,13 @@ CFG.TRAIN.DATA.DIR = "datasets/" + CFG.DATASET_NAME
 CFG.TRAIN.DATA.BATCH_SIZE = 32
 CFG.TRAIN.DATA.PREFETCH = False
 CFG.TRAIN.DATA.SHUFFLE = True
-CFG.TRAIN.DATA.NUM_WORKERS = 1
+CFG.TRAIN.DATA.NUM_WORKERS = 2
 CFG.TRAIN.DATA.PIN_MEMORY = False
-# curriculum learning
+## curriculum learning
 CFG.TRAIN.CL = EasyDict()
-CFG.TRAIN.CL.WARM_EPOCHS = 30
-CFG.TRAIN.CL.CL_EPOCHS = 3
-CFG.TRAIN.CL.PREDICTION_LENGTH = 12
+CFG.TRAIN.CL.WARM_EPOCHS = 0
+CFG.TRAIN.CL.CL_EPOCHS = 6
+CFG.TRAIN.CL.PREDICTION_LENGTH  = 12
 
 # ================= validate ================= #
 CFG.VAL = EasyDict()
@@ -106,7 +105,7 @@ CFG.VAL.DATA = EasyDict()
 # read data
 CFG.VAL.DATA.DIR = "datasets/" + CFG.DATASET_NAME
 # dataloader args, optional
-CFG.VAL.DATA.BATCH_SIZE = 16
+CFG.VAL.DATA.BATCH_SIZE = 64
 CFG.VAL.DATA.PREFETCH = False
 CFG.VAL.DATA.SHUFFLE = False
 CFG.VAL.DATA.NUM_WORKERS = 2
@@ -120,7 +119,7 @@ CFG.TEST.DATA = EasyDict()
 # read data
 CFG.TEST.DATA.DIR = "datasets/" + CFG.DATASET_NAME
 # dataloader args, optional
-CFG.TEST.DATA.BATCH_SIZE = 32
+CFG.TEST.DATA.BATCH_SIZE = 64
 CFG.TEST.DATA.PREFETCH = False
 CFG.TEST.DATA.SHUFFLE = False
 CFG.TEST.DATA.NUM_WORKERS = 2
