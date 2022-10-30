@@ -22,7 +22,7 @@ CFG.DATASET_NAME = "BAST"
 CFG.DATASET_TYPE = "Traffic flow"
 CFG.DATASET_INPUT_LEN = 12
 CFG.DATASET_OUTPUT_LEN = 12
-CFG.GPU_NUM = 1
+CFG.GPU_NUM = 4
 
 # ================= environment ================= #
 CFG.ENV = EasyDict()
@@ -38,7 +38,7 @@ adj_mx, _ = load_adj("datasets/" + CFG.DATASET_NAME +
                      "/adj_mx_bast.npz", "doubletransition", npz=True)
 CFG.MODEL.PARAM = {
     "gcn_depth": 2,
-    "num_nodes": 325,
+    "num_nodes": 1680,
     "predefined_A": [torch.Tensor(_) for _ in adj_mx],
     "dropout": 0.3,
     "subgraph_size": 20,
