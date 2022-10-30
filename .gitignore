@@ -19,6 +19,7 @@ core*
 *.pickle
 *.pyc
 *.txt
+*.ipynb
 
 *.py[cod]
 *$py.class
