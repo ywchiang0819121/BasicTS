@@ -23,7 +23,7 @@ CFG.DATASET_NAME = "BAST"
 CFG.DATASET_TYPE = "Traffic flow"
 CFG.DATASET_INPUT_LEN = 12
 CFG.DATASET_OUTPUT_LEN = 12
-CFG.GPU_NUM = 1
+CFG.GPU_NUM = 4
 
 # ================= environment ================= #
 CFG.ENV = EasyDict()
