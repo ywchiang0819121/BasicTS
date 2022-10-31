@@ -45,7 +45,7 @@ CFG.MODEL.PARAM = {
     "node_dim": 40,
     "middle_dim": 2,
     "seq_length": 12,
-    "in_dim": 2,
+    "in_dim": 3,
     "list_weight": [0.05, 0.95, 0.95],
     "tanhalpha": 3,
     "cl_decay_steps": 5500,
@@ -86,7 +86,7 @@ CFG.TRAIN.NULL_VAL = 0.0
 # read data
 CFG.TRAIN.DATA.DIR = "datasets/" + CFG.DATASET_NAME
 # dataloader args, optional
-CFG.TRAIN.DATA.BATCH_SIZE = 32
+CFG.TRAIN.DATA.BATCH_SIZE = 8
 CFG.TRAIN.DATA.PREFETCH = False
 CFG.TRAIN.DATA.SHUFFLE = True
 CFG.TRAIN.DATA.NUM_WORKERS = 2
