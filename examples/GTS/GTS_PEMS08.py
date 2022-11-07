@@ -41,10 +41,8 @@ CFG.ENV.CUDNN.ENABLED = True
 CFG.MODEL = EasyDict()
 CFG.MODEL.NAME = "GTS"
 CFG.MODEL.ARCH = GTS
-node_feats_full = load_pkl(
-    "datasets/{0}/data.pkl".format(CFG.DATASET_NAME))["processed_data"][..., 0]
-train_index_list = load_pkl("datasets/{0}/index_in{1}_out{2}.pkl".format(
-    CFG.DATASET_NAME, CFG.DATASET_INPUT_LEN, CFG.DATASET_OUTPUT_LEN))["train"]
+node_feats_full = load_pkl("datasets/{0}/data_in{1}_out{2}.pkl".format(CFG.DATASET_NAME, CFG.DATASET_INPUT_LEN, CFG.DATASET_OUTPUT_LEN))["processed_data"][..., 0]
+train_index_list = load_pkl("datasets/{0}/index_in{1}_out{2}.pkl".format(CFG.DATASET_NAME, CFG.DATASET_INPUT_LEN, CFG.DATASET_OUTPUT_LEN))["train"]
 node_feats = node_feats_full[:train_index_list[-1][-1], ...]
 CFG.MODEL.PARAM = {
     "cl_decay_steps": 2000,
@@ -64,7 +62,7 @@ CFG.MODEL.PARAM = {
     "temp": 0.5,
     "k": 30
 }
-CFG.MODEL.FROWARD_FEATURES = [0, 1]
+CFG.MODEL.FORWARD_FEATURES = [0, 1]
 CFG.MODEL.TARGET_FEATURES = [0]
 
 # ================= optim ================= #
