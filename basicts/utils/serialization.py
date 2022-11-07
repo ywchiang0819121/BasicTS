@@ -40,7 +40,7 @@ def dump_pkl(obj: object, file_path: str):
         pickle.dump(obj, f)
 
 
-def load_adj(file_path: str, adj_type: str):
+def load_adj(file_path: str, adj_type: str, npz=False):
     """load adjacency matrix.
 
     Args:
@@ -51,13 +51,15 @@ def load_adj(file_path: str, adj_type: str):
         list of numpy.matrix: list of preproceesed adjacency matrices
         np.ndarray: raw adjacency matrix
     """
-
-    try:
-        # METR and PEMS_BAY
-        _, _, adj_mx = load_pkl(file_path)
-    except ValueError:
-        # PEMS04
-        adj_mx = load_pkl(file_path)
+    if npz:
+        adj_mx = np.load(file_path)['x']
+    else:
+        try:
+            # METR and PEMS_BAY
+            _, _, adj_mx = load_pkl(file_path)
+        except ValueError:
+            # PEMS04
+            adj_mx = load_pkl(file_path)
     if adj_type == "scalap":
         adj = [calculate_scaled_laplacian(adj_mx).astype(np.float32).todense()]
     elif adj_type == "normlap":

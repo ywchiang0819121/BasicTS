@@ -7,8 +7,10 @@ import argparse
 import numpy as np
 import pandas as pd
 
+
 # TODO: remove it when basicts can be installed by pip
-sys.path.append(os.path.abspath(__file__ + "/../../../.."))
+sys.path.append("E:\\MS\\2021\\BasicTS")
+# print(sys.path)
 from basicts.data.transform import standard_transform
 
 
@@ -37,8 +39,9 @@ def generate_data(args: argparse.Namespace):
     graph_file_path = args.graph_file_path
 
     # read data
-    df = pd.read_hdf(data_file_path)
-    data = np.expand_dims(df.values, axis=-1)
+    data = np.load('data/2021_2way.npz')['x']
+    # num_samples, num_nodes, _ = data.shape
+    # data = np.expand_dims(df.values, axis=-1)
 
     data = data[..., target_channel]
     print("raw time series shape: {0}".format(data.shape))
@@ -69,14 +72,13 @@ def generate_data(args: argparse.Namespace):
     feature_list = [data_norm]
     if add_time_of_day:
         # numerical time_of_day
-        tod = (
-            df.index.values - df.index.values.astype("datetime64[D]")) / np.timedelta64(1, "D")
+        tod = (np.load('./data/time.npz')['x'][:,1]-1) / 24
         tod_tiled = np.tile(tod, [1, n, 1]).transpose((2, 1, 0))
         feature_list.append(tod_tiled)
 
     if add_day_of_week:
         # numerical day_of_week
-        dow = df.index.dayofweek
+        dow = (np.load('./data/time.npz')['x'][:,0]-1) / 7
         dow_tiled = np.tile(dow, [1, n, 1]).transpose((2, 1, 0))
         feature_list.append(dow_tiled)
 
@@ -95,7 +97,7 @@ def generate_data(args: argparse.Namespace):
     with open(output_dir + "/data_in{0}_out{1}.pkl".format(history_seq_len, future_seq_len), "wb") as f:
         pickle.dump(data, f)
     # copy adj
-    shutil.copyfile(graph_file_path, output_dir + "/adj_mx.pkl")
+    # shutil.copyfile(graph_file_path, output_dir + "/adj_mx.pkl")
 
 
 if __name__ == "__main__":
@@ -105,7 +107,7 @@ if __name__ == "__main__":
 
     TRAIN_RATIO = 0.7
     VALID_RATIO = 0.1
-    TARGET_CHANNEL = [0]                   # target channel(s)
+    TARGET_CHANNEL = [0,1]                   # target channel(s)
 
     DATASET_NAME = "PEMS-BAY"
     TOD = True                  # if add time_of_day feature
