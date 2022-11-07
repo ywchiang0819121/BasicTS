@@ -22,7 +22,7 @@ CFG.DATASET_NAME = "BAST"
 CFG.DATASET_TYPE = "Traffic flow"
 CFG.DATASET_INPUT_LEN = 12
 CFG.DATASET_OUTPUT_LEN = 12
-CFG.GPU_NUM = 4
+CFG.GPU_NUM = 1
 
 # ================= environment ================= #
 CFG.ENV = EasyDict()
@@ -45,14 +45,14 @@ CFG.MODEL.PARAM = {
     "node_dim": 40,
     "middle_dim": 2,
     "seq_length": 12,
-    "in_dim": 3,
+    "in_dim": 4,
     "list_weight": [0.05, 0.95, 0.95],
     "tanhalpha": 3,
     "cl_decay_steps": 5500,
     "rnn_size": 64,
     "hyperGNN_dim": 16
 }
-CFG.MODEL.FROWARD_FEATURES = [0, 1, 2]
+CFG.MODEL.FROWARD_FEATURES = [0, 1, 2, 3]
 CFG.MODEL.TARGET_FEATURES = [0, 1]
 
 # ================= optim ================= #
@@ -86,7 +86,7 @@ CFG.TRAIN.NULL_VAL = 0.0
 # read data
 CFG.TRAIN.DATA.DIR = "datasets/" + CFG.DATASET_NAME
 # dataloader args, optional
-CFG.TRAIN.DATA.BATCH_SIZE = 8
+CFG.TRAIN.DATA.BATCH_SIZE = 1
 CFG.TRAIN.DATA.PREFETCH = False
 CFG.TRAIN.DATA.SHUFFLE = True
 CFG.TRAIN.DATA.NUM_WORKERS = 2

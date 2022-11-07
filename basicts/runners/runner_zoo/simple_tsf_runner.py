@@ -37,7 +37,7 @@ class SimpleTimeSeriesForecastingRunner(BaseTimeSeriesForecastingRunner):
         """
 
         # select feature using self.target_features
-        data = data[:, :, :, self.target_features]
+        data = data[:, :, :, 0:1]
         return data
 
     def forward(self, data: tuple, epoch: int = None, iter_num: int = None, train: bool = True, **kwargs) -> tuple:

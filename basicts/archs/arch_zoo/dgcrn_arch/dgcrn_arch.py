@@ -32,8 +32,13 @@ class DGCRN(nn.Module):
 
         self.hidden_size = self.rnn_size
 
-        dims_hyper = [self.hidden_size + in_dim,
+        dims_hyper = [self.hidden_size + in_dim - 1,
                       hyperGNN_dim, middle_dim, node_dim]
+
+        dims_hyper_de = [self.hidden_size + in_dim-2,
+                      hyperGNN_dim, middle_dim, node_dim]
+
+        print(dims_hyper)
 
         self.GCN1_tg = gcn(dims_hyper, gcn_depth,
                            dropout, *list_weight, 'hyper')
@@ -41,10 +46,10 @@ class DGCRN(nn.Module):
         self.GCN2_tg = gcn(dims_hyper, gcn_depth,
                            dropout, *list_weight, 'hyper')
 
-        self.GCN1_tg_de = gcn(dims_hyper, gcn_depth,
+        self.GCN1_tg_de = gcn(dims_hyper_de, gcn_depth,
                               dropout, *list_weight, 'hyper')
 
-        self.GCN2_tg_de = gcn(dims_hyper, gcn_depth,
+        self.GCN2_tg_de = gcn(dims_hyper_de, gcn_depth,
                               dropout, *list_weight, 'hyper')
 
         self.GCN1_tg_1 = gcn(dims_hyper, gcn_depth,
@@ -53,17 +58,18 @@ class DGCRN(nn.Module):
         self.GCN2_tg_1 = gcn(dims_hyper, gcn_depth,
                              dropout, *list_weight, 'hyper')
 
-        self.GCN1_tg_de_1 = gcn(dims_hyper, gcn_depth,
+        self.GCN1_tg_de_1 = gcn(dims_hyper_de, gcn_depth,
                                 dropout, *list_weight, 'hyper')
 
-        self.GCN2_tg_de_1 = gcn(dims_hyper, gcn_depth,
+        self.GCN2_tg_de_1 = gcn(dims_hyper_de, gcn_depth,
                                 dropout, *list_weight, 'hyper')
 
         self.fc_final = nn.Linear(self.hidden_size, self.output_dim)
 
         self.alpha = tanhalpha
         self.k = subgraph_size
-        dims = [in_dim + self.hidden_size, self.hidden_size]
+        dims = [in_dim + self.hidden_size-1, self.hidden_size]
+        dims_de = [in_dim + self.hidden_size-2, self.hidden_size]
 
         self.gz1 = gcn(dims, gcn_depth, dropout, *list_weight, 'RNN')
         self.gz2 = gcn(dims, gcn_depth, dropout, *list_weight, 'RNN')
@@ -72,12 +78,12 @@ class DGCRN(nn.Module):
         self.gc1 = gcn(dims, gcn_depth, dropout, *list_weight, 'RNN')
         self.gc2 = gcn(dims, gcn_depth, dropout, *list_weight, 'RNN')
 
-        self.gz1_de = gcn(dims, gcn_depth, dropout, *list_weight, 'RNN')
-        self.gz2_de = gcn(dims, gcn_depth, dropout, *list_weight, 'RNN')
-        self.gr1_de = gcn(dims, gcn_depth, dropout, *list_weight, 'RNN')
-        self.gr2_de = gcn(dims, gcn_depth, dropout, *list_weight, 'RNN')
-        self.gc1_de = gcn(dims, gcn_depth, dropout, *list_weight, 'RNN')
-        self.gc2_de = gcn(dims, gcn_depth, dropout, *list_weight, 'RNN')
+        self.gz1_de = gcn(dims_de, gcn_depth, dropout, *list_weight, 'RNN')
+        self.gz2_de = gcn(dims_de, gcn_depth, dropout, *list_weight, 'RNN')
+        self.gr1_de = gcn(dims_de, gcn_depth, dropout, *list_weight, 'RNN')
+        self.gr2_de = gcn(dims_de, gcn_depth, dropout, *list_weight, 'RNN')
+        self.gc1_de = gcn(dims_de, gcn_depth, dropout, *list_weight, 'RNN')
+        self.gc2_de = gcn(dims_de, gcn_depth, dropout, *list_weight, 'RNN')
 
         self.use_curriculum_learning = True
         self.cl_decay_steps = cl_decay_steps
