@@ -23,7 +23,7 @@ class SimpleTimeSeriesForecastingRunner(BaseTimeSeriesForecastingRunner):
 
         # select feature using self.forward_features
         if self.forward_features is not None:
-            data = data[:, :, :, self.forward_features]
+            data = data[:, :, :, 0:4]
         return data
 
     def select_target_features(self, data: torch.Tensor) -> torch.Tensor:

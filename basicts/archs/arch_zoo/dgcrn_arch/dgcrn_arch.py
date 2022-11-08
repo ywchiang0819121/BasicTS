@@ -32,7 +32,7 @@ class DGCRN(nn.Module):
 
         self.hidden_size = self.rnn_size
 
-        dims_hyper = [self.hidden_size + in_dim - 1,
+        dims_hyper = [self.hidden_size + in_dim,
                       hyperGNN_dim, middle_dim, node_dim]
 
         dims_hyper_de = [self.hidden_size + in_dim-2,
@@ -68,7 +68,7 @@ class DGCRN(nn.Module):
 
         self.alpha = tanhalpha
         self.k = subgraph_size
-        dims = [in_dim + self.hidden_size-1, self.hidden_size]
+        dims = [in_dim + self.hidden_size, self.hidden_size]
         dims_de = [in_dim + self.hidden_size-2, self.hidden_size]
 
         self.gz1 = gcn(dims, gcn_depth, dropout, *list_weight, 'RNN')
