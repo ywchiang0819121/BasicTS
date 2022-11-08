@@ -20,6 +20,8 @@ core*
 *.pyc
 *.txt
 *.ipynb
+*.zip
+
 
 *.py[cod]
 *$py.class
