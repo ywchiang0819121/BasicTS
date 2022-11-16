@@ -57,7 +57,7 @@ CFG.MODEL.PARAM = {
     "rnn_units": 64,
     "seq_len": 12,
     "use_curriculum_learning": True,
-    "dim_fc": 383664,
+    "dim_fc": 97936,
     "node_feats": node_feats,
     "temp": 0.5,
     "k": 10
