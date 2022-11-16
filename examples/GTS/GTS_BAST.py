@@ -51,7 +51,7 @@ CFG.MODEL.PARAM = {
     "input_dim": 2,
     "l1_decay": 0,
     "max_diffusion_step": 3,
-    "num_nodes": 207,
+    "num_nodes": 1680,
     "num_rnn_layers": 1,
     "output_dim": 1,
     "rnn_units": 64,
